@@ -1,0 +1,73 @@
+raspberrypi-userland (1:2+git20210928~141951+6e8f786-2) bullseye; urgency=medium
+
+  * Install udev rule through dh_installudev
+  * Update vcio and vchiq udev rules
+
+ -- Serge Schneider <serge@raspberrypi.com>  Tue, 12 Oct 2021 16:30:26 +0100
+
+raspberrypi-userland (1:2+git20210928~141951+6e8f786-1) bullseye; urgency=medium
+
+  * Re-add tvservice
+  * New upstream version
+
+ -- Serge Schneider <serge@raspberrypi.com>  Tue, 28 Sep 2021 15:53:06 +0100
+
+raspberrypi-userland (1:2+git20210719~113532+97bc818-6) bullseye; urgency=medium
+
+  * Change vcdbg to recommends
+
+ -- Serge Schneider <serge@raspberrypi.com>  Mon, 13 Sep 2021 19:13:07 +0100
+
+raspberrypi-userland (1:2+git20210719~113532+97bc818-5) bullseye; urgency=medium
+
+  * Install manpages
+
+ -- Serge Schneider <serge@raspberrypi.com>  Mon, 13 Sep 2021 15:34:46 +0100
+
+raspberrypi-userland (1:2+git20210719~113532+97bc818-4) bullseye; urgency=medium
+
+  * Add vcdbg dependency to libraspberrypi-bin
+
+ -- Serge Schneider <serge@raspberrypi.com>  Mon, 13 Sep 2021 14:59:26 +0100
+
+raspberrypi-userland (1:2+git20210719~113532+97bc818-3) bullseye; urgency=medium
+
+  * Remove legacy interfaces
+
+ -- Serge Schneider <serge@raspberrypi.com>  Wed, 08 Sep 2021 15:50:51 +0100
+
+raspberrypi-userland (1:2+git20210719~113532+97bc818-2) bullseye; urgency=medium
+
+  * Release for bullseye
+
+ -- Serge Schneider <serge@raspberrypi.com>  Tue, 07 Sep 2021 16:53:22 +0100
+
+raspberrypi-userland (2+git20210719~113532+97bc818-1) buster; urgency=medium
+
+  * Update from master
+
+ -- Serge Schneider <serge@raspberrypi.com>  Mon, 19 Jul 2021 12:36:24 +0100
+
+raspberrypi-userland (2+git20201022~151804+e432bc3-1) buster; urgency=medium
+
+  * Update from master
+
+ -- Serge Schneider <serge@raspberrypi.com>  Thu, 22 Oct 2020 16:58:12 +0100
+
+raspberrypi-userland (2+git20200813~095940+f73fca0-1) buster; urgency=medium
+
+  * Update from master
+
+ -- Serge Schneider <serge@raspberrypi.com>  Thu, 13 Aug 2020 12:51:56 +0100
+
+raspberrypi-userland (2+git20200520~143707+2fe4ca3-2) buster; urgency=medium
+
+  * Remove GL headers from arm64 builds
+
+ -- Serge Schneider <serge@raspberrypi.com>  Thu, 28 May 2020 21:27:16 +0100
+
+raspberrypi-userland (2+git20200520~143707+2fe4ca3-1) buster; urgency=medium
+
+  * Initial release
+
+ -- Serge Schneider <serge@raspberrypi.org>  Fri, 21 Feb 2020 15:32:40 +0000

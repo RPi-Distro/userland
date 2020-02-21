@@ -1,0 +1,23 @@
+#!/usr/bin/make -f
+include /usr/share/dpkg/architecture.mk
+
+ifeq ($(DEB_HOST_ARCH),armhf)
+	ARM64 = OFF
+else ifeq ($(DEB_HOST_ARCH),arm64)
+	ARM64 = ON
+else
+	$(error Unsupported architecture $(DEB_HOST_ARCH))
+endif
+
+%:
+	dh $@
+
+override_dh_installudev:
+	dh_installudev --name=local-rpi --priority=10
+
+override_dh_auto_clean:
+	rm -rf build/
+	dh_auto_clean
+
+override_dh_auto_configure:
+	dh_auto_configure -- -DARM64=$(ARM64)

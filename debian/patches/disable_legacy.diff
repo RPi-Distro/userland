@@ -1,0 +1,163 @@
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -34,8 +34,8 @@ include_directories(${PROJECT_SOURCE_DIR
+ include_directories(interface/vcos/pthreads)
+ include_directories(interface/vmcs_host/linux)
+ include_directories(interface/vmcs_host)
+-include_directories(interface/vmcs_host/khronos)
+-include_directories(interface/khronos/include)
++#include_directories(interface/vmcs_host/khronos)
++#include_directories(interface/khronos/include)
+ include_directories(${PROJECT_BINARY_DIR})
+ include_directories(interface/vchiq_arm)
+ #include_directories(tools/inet_transport)
+@@ -68,7 +68,7 @@ endif()
+ add_subdirectory(interface/vcos)
+ add_subdirectory(interface/vmcs_host)
+ add_subdirectory(interface/vchiq_arm)
+-if(NOT ARM64)
++if(FALSE)
+    add_subdirectory(interface/khronos)
+ endif()
+ 
+@@ -80,11 +80,11 @@ if(BUILD_MMAL)
+ endif()
+ 
+ # VidTex supports Android and Linux
+-if(BUILD_MMAL_APPS)
++if(FALSE)
+ add_subdirectory(host_applications/android/apps/vidtex)
+-endif(BUILD_MMAL_APPS)
++endif(FALSE)
+ 
+-if(NOT ARM64)
++if(FALSE)
+    add_subdirectory(middleware/openmaxil)
+ endif()
+ 
+@@ -124,7 +124,7 @@ include_directories("${PROJECT_BINARY_DI
+ include(FindPkgConfig QUIET)
+ if(PKG_CONFIG_FOUND)
+ 	# Produce a pkg-config file
+-	foreach(PCFILE bcm_host.pc brcmegl.pc brcmglesv2.pc brcmvg.pc vcsm.pc mmal.pc)
++	foreach(PCFILE bcm_host.pc vcsm.pc mmal.pc)
+ 		configure_file("pkgconfig/${PCFILE}.in" "${PCFILE}" @ONLY)
+ 		install(FILES       "${CMAKE_CURRENT_BINARY_DIR}/${PCFILE}"
+ 			DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
+--- a/interface/vmcs_host/CMakeLists.txt
++++ b/interface/vmcs_host/CMakeLists.txt
+@@ -17,7 +17,7 @@ add_library(vchostif
+ #add_library(bufman            vc_vchi_bufman.c            )
+ set(INSTALL_TARGETS vchostif)
+ 
+-if(NOT ARM64)
++if(FALSE)
+ 	# OpenMAX/IL component service
+ 	add_library(vcilcs
+ 		    vcilcs.c vcilcs_in.c vcilcs_out.c vcilcs_common.c)
+--- a/host_applications/linux/CMakeLists.txt
++++ b/host_applications/linux/CMakeLists.txt
+@@ -5,15 +5,15 @@ add_subdirectory(apps/gencmd)
+ add_subdirectory(apps/tvservice)
+ add_subdirectory(apps/vcmailbox)
+ if(NOT ARM64)
+-   add_subdirectory(apps/raspicam)
++   #add_subdirectory(apps/raspicam)
+    add_subdirectory(libs/sm)
+-   add_subdirectory(apps/smem)
++   #add_subdirectory(apps/smem)
+ endif()
+ add_subdirectory(libs/debug_sym)
+ add_subdirectory(apps/dtoverlay)
+ add_subdirectory(apps/dtmerge)
+ 
+-if(ALL_APPS)
++if(FALSE)
+  add_subdirectory(apps/vcdbg)
+  add_subdirectory(libs/elftoolchain)
+  # add_subdirectory(apps/smct)
+--- a/makefiles/cmake/vmcs.cmake
++++ b/makefiles/cmake/vmcs.cmake
+@@ -59,8 +59,8 @@ configure_file (
+ #        PERMISSIONS OWNER_WRITE WORLD_READ)
+ 
+ # provide hello_pi demos
+-install(DIRECTORY host_applications/linux/apps/hello_pi
+-        DESTINATION ${VMCS_INSTALL_PREFIX}/src)
++#install(DIRECTORY host_applications/linux/apps/hello_pi
++#        DESTINATION ${VMCS_INSTALL_PREFIX}/src)
+ 
+ # provide header files
+ #install(DIRECTORY host_applications/linux/libs/bcm_host/include
+@@ -72,10 +72,10 @@ install(DIRECTORY ${vmcs_root}/interface
+ install(DIRECTORY ${vmcs_root}/interface/vctypes   DESTINATION ${VMCS_INSTALL_PREFIX}/include/interface FILES_MATCHING PATTERN "*.h")
+ install(DIRECTORY ${vmcs_root}/vcinclude           DESTINATION ${VMCS_INSTALL_PREFIX}/include           FILES_MATCHING PATTERN "*.h")
+ install(DIRECTORY ${vmcs_root}/interface/peer      DESTINATION ${VMCS_INSTALL_PREFIX}/include/interface FILES_MATCHING PATTERN "*.h")
+-install(DIRECTORY ${vmcs_root}/interface/vmcs_host DESTINATION ${VMCS_INSTALL_PREFIX}/include/interface FILES_MATCHING PATTERN "*.h" PATTERN "${vmcs_root}/interface/vmcs_host/khronos" EXCLUDE)
++install(DIRECTORY ${vmcs_root}/interface/vmcs_host DESTINATION ${VMCS_INSTALL_PREFIX}/include/interface FILES_MATCHING PATTERN "*.h" PATTERN "IL" EXCLUDE)
+ 
+-install(DIRECTORY ${vmcs_root}/interface/khronos/include       DESTINATION ${VMCS_INSTALL_PREFIX}     FILES_MATCHING PATTERN "*.h")
+-install(DIRECTORY ${vmcs_root}/interface/vmcs_host/khronos/IL  DESTINATION ${VMCS_INSTALL_PREFIX}/include     FILES_MATCHING PATTERN "*.h")
++#install(DIRECTORY ${vmcs_root}/interface/khronos/include       DESTINATION ${VMCS_INSTALL_PREFIX}     FILES_MATCHING PATTERN "*.h")
++#install(DIRECTORY ${vmcs_root}/interface/vmcs_host/khronos/IL  DESTINATION ${VMCS_INSTALL_PREFIX}/include     FILES_MATCHING PATTERN "*.h")
+ 
+ install(DIRECTORY ${vmcs_root}/host_applications/linux/libs/bcm_host/include     DESTINATION ${VMCS_INSTALL_PREFIX}       FILES_MATCHING PATTERN "*.h")
+ 
+--- a/containers/CMakeLists.txt
++++ b/containers/CMakeLists.txt
+@@ -74,54 +74,9 @@ install(TARGETS containers DESTINATION $
+ set(container_readers)
+ set(container_writers)
+ 
+-# Container modules
+-add_subdirectory(mp4)
+-set(container_readers ${container_readers} reader_mp4)
+-set(container_writers ${container_writers} writer_mp4)
+-add_subdirectory(mpeg)
+-set(container_readers ${container_readers} reader_ps)
+-add_subdirectory(mpga)
+-set(container_readers ${container_readers} reader_mpga)
+-add_subdirectory(binary)
+-set(container_readers ${container_readers} reader_binary)
+-set(container_writers ${container_writers} writer_binary)
+-add_subdirectory(mkv)
+-set(container_readers ${container_readers} reader_mkv)
+-add_subdirectory(wav)
+-set(container_readers ${container_readers} reader_wav)
+-add_subdirectory(asf)
+-set(container_readers ${container_readers} reader_asf)
+-set(container_writers ${container_writers} writer_asf)
+-add_subdirectory(flash)
+-set(container_readers ${container_readers} reader_flv)
+-add_subdirectory(avi)
+-set(container_readers ${container_readers} reader_avi)
+-set(container_writers ${container_writers} writer_avi)
+-add_subdirectory(rtp)
+-set(container_readers ${container_readers} reader_rtp)
+-add_subdirectory(rtsp)
+-set(container_readers ${container_readers} reader_rtsp)
+-add_subdirectory(rcv)
+-set(container_readers ${container_readers} reader_rcv)
+-add_subdirectory(rv9)
+-set(container_readers ${container_readers} reader_rv9)
+-add_subdirectory(qsynth)
+-set(container_readers ${container_readers} reader_qsynth)
+-add_subdirectory(simple)
+-set(container_readers ${container_readers} reader_simple)
+-set(container_writers ${container_writers} writer_simple)
+-add_subdirectory(raw)
+-set(container_readers ${container_readers} reader_raw_video)
+-set(container_writers ${container_writers} writer_raw_video)
+-add_subdirectory(dummy)
+-set(container_writers ${container_writers} writer_dummy)
+-
+-add_subdirectory(metadata/id3)
+-set(container_readers ${container_readers} reader_metadata_id3)
+-
+ if (${LIBRARY_TYPE} STREQUAL STATIC)
+ target_link_libraries(containers ${container_readers} ${container_writers})
+ endif (${LIBRARY_TYPE} STREQUAL STATIC)
+ 
+ # Test apps
+-add_subdirectory(test)
++#add_subdirectory(test)

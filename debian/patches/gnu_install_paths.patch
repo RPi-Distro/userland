@@ -1,0 +1,283 @@
+--- a/makefiles/cmake/vmcs.cmake
++++ b/makefiles/cmake/vmcs.cmake
+@@ -10,7 +10,7 @@ INCLUDE(CPack)
+ if (ANDROID)
+   SET(VMCS_INSTALL_PREFIX "/vendor/brcm/islands" CACHE PATH "Prefix prepended to install directories" FORCE)
+ elseif(NOT DEFINED VMCS_INSTALL_PREFIX)
+-  SET(VMCS_INSTALL_PREFIX "/opt/vc" CACHE PATH "Prefix prepended to install directories" FORCE)
++  SET(VMCS_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}" CACHE PATH "Prefix prepended to install directories" FORCE)
+ endif()
+ 
+ SET(CMAKE_INSTALL_PREFIX "${VMCS_INSTALL_PREFIX}" CACHE INTERNAL "Prefix
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -20,6 +20,8 @@ get_filename_component(VIDEOCORE_ROOT .
+ 
+ set(VCOS_PTHREADS_BUILD_SHARED TRUE)
+ 
++include(GNUInstallDirs)
++
+ include(makefiles/cmake/global_settings.cmake)
+ include(makefiles/cmake/arm-linux.cmake)
+ include(makefiles/cmake/vmcs.cmake)
+@@ -125,7 +127,7 @@ if(PKG_CONFIG_FOUND)
+ 	foreach(PCFILE bcm_host.pc brcmegl.pc brcmglesv2.pc brcmvg.pc vcsm.pc mmal.pc)
+ 		configure_file("pkgconfig/${PCFILE}.in" "${PCFILE}" @ONLY)
+ 		install(FILES       "${CMAKE_CURRENT_BINARY_DIR}/${PCFILE}"
+-			DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig")
++			DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
+ 	endforeach()
+ endif()
+ # Remove cache entry, if one added by command line
+--- a/interface/mmal/components/CMakeLists.txt
++++ b/interface/mmal/components/CMakeLists.txt
+@@ -30,5 +30,7 @@ set(container_libs ${container_libs} con
+ target_link_libraries(mmal_components ${container_libs} mmal_util)
+ target_link_libraries(mmal_components mmal_core)
+ 
+-install(TARGETS mmal_components DESTINATION lib)
++set_target_properties(mmal_components PROPERTIES SOVERSION 0)
++
++install(TARGETS mmal_components DESTINATION ${CMAKE_INSTALL_LIBDIR})
+ 
+--- a/host_applications/linux/libs/sm/CMakeLists.txt
++++ b/host_applications/linux/libs/sm/CMakeLists.txt
+@@ -14,5 +14,7 @@ add_library(vcsm ${SHARED} user-vcsm.c)
+ 
+ target_link_libraries(vcsm vcos)
+ 
+-install(TARGETS vcsm DESTINATION lib)
++set_target_properties(vcsm PROPERTIES SOVERSION 0)
++
++install(TARGETS vcsm DESTINATION ${CMAKE_INSTALL_LIBDIR})
+ install(FILES user-vcsm.h DESTINATION include/interface/vcsm)
+--- a/interface/khronos/CMakeLists.txt
++++ b/interface/khronos/CMakeLists.txt
+@@ -78,8 +78,11 @@ target_link_libraries(GLESv2 EGL khrn_cl
+ target_link_libraries(WFC EGL)
+ target_link_libraries(OpenVG EGL)
+ 
+-install(TARGETS EGL GLESv2 OpenVG WFC khrn_client DESTINATION lib)
+-install(TARGETS EGL_static GLESv2_static khrn_static DESTINATION lib)
++set_target_properties(EGL GLESv2 OpenVG WFC khrn_client PROPERTIES SOVERSION 0)
++set_target_properties(EGL_static GLESv2_static khrn_static PROPERTIES SOVERSION 0)
++
++install(TARGETS EGL GLESv2 OpenVG WFC khrn_client DESTINATION ${CMAKE_INSTALL_LIBDIR})
++install(TARGETS EGL_static GLESv2_static khrn_static DESTINATION ${CMAKE_INSTALL_LIBDIR})
+ 
+ # recommended names to use to avoid conflicts with mesa libs
+ add_library(brcmEGL ${SHARED} ${EGL_SOURCE})
+@@ -92,4 +95,6 @@ target_link_libraries(brcmGLESv2 brcmEGL
+ target_link_libraries(brcmWFC brcmEGL)
+ target_link_libraries(brcmOpenVG brcmEGL)
+ 
+-install(TARGETS brcmEGL brcmGLESv2 brcmOpenVG brcmWFC DESTINATION lib)
++set_target_properties(brcmEGL brcmGLESv2 brcmOpenVG brcmWFC PROPERTIES SOVERSION 0)
++
++install(TARGETS brcmEGL brcmGLESv2 brcmOpenVG brcmWFC DESTINATION ${CMAKE_INSTALL_LIBDIR})
+--- a/interface/vcos/pthreads/CMakeLists.txt
++++ b/interface/vcos/pthreads/CMakeLists.txt
+@@ -41,6 +41,7 @@ else ()
+    target_link_libraries (vcos pthread rt)
+ endif ()
+ 
++set_target_properties(vcos PROPERTIES SOVERSION 0)
+ 
+ #install(FILES ${HEADERS} DESTINATION include)
+-install(TARGETS vcos DESTINATION lib)
++install(TARGETS vcos DESTINATION ${CMAKE_INSTALL_LIBDIR})
+--- a/host_applications/linux/libs/bcm_host/CMakeLists.txt
++++ b/host_applications/linux/libs/bcm_host/CMakeLists.txt
+@@ -19,5 +19,7 @@ add_library(bcm_host ${SHARED} bcm_host.
+ 
+ target_link_libraries(bcm_host vcos vchostif)
+ 
+-install(TARGETS bcm_host DESTINATION lib)
++set_target_properties(bcm_host PROPERTIES SOVERSION 0)
++
++install(TARGETS bcm_host DESTINATION ${CMAKE_INSTALL_LIBDIR})
+ 
+--- a/host_applications/linux/libs/debug_sym/CMakeLists.txt
++++ b/host_applications/linux/libs/debug_sym/CMakeLists.txt
+@@ -11,6 +11,9 @@ include_directories (
+ add_library(debug_sym ${SHARED} debug_sym.c)
+ add_library(debug_sym_static STATIC debug_sym.c)
+ 
+-install(TARGETS debug_sym DESTINATION lib)
+-install(TARGETS debug_sym_static DESTINATION lib)
++set_target_properties(debug_sym PROPERTIES SOVERSION 0)
++set_target_properties(debug_sym_static PROPERTIES SOVERSION 0)
++
++install(TARGETS debug_sym DESTINATION ${CMAKE_INSTALL_LIBDIR})
++install(TARGETS debug_sym_static DESTINATION ${CMAKE_INSTALL_LIBDIR})
+ install(FILES debug_sym.h DESTINATION include/interface/debug_sym)
+--- a/interface/mmal/CMakeLists.txt
++++ b/interface/mmal/CMakeLists.txt
+@@ -16,7 +16,9 @@ add_subdirectory(client)
+ 
+ target_link_libraries(mmal mmal_core mmal_util mmal_vc_client vcos mmal_components)
+ 
+-install(TARGETS mmal DESTINATION lib)
++set_target_properties(mmal PROPERTIES SOVERSION 0)
++
++install(TARGETS mmal DESTINATION ${CMAKE_INSTALL_LIBDIR})
+ install(FILES
+    mmal.h
+    mmal_buffer.h
+--- a/interface/mmal/core/CMakeLists.txt
++++ b/interface/mmal/core/CMakeLists.txt
+@@ -13,7 +13,9 @@ add_library (mmal_core ${LIBRARY_TYPE}
+ 
+ target_link_libraries (mmal_core vcos)
+ 
+-install(TARGETS mmal_core DESTINATION lib)
++set_target_properties(mmal_core PROPERTIES SOVERSION 0)
++
++install(TARGETS mmal_core DESTINATION ${CMAKE_INSTALL_LIBDIR})
+ install(FILES
+    mmal_buffer_private.h
+    mmal_clock_private.h
+--- a/interface/mmal/util/CMakeLists.txt
++++ b/interface/mmal/util/CMakeLists.txt
+@@ -12,7 +12,9 @@ add_library (mmal_util ${LIBRARY_TYPE}
+ 
+ target_link_libraries (mmal_util vcos)
+ 
+-install(TARGETS mmal_util DESTINATION lib)
++set_target_properties(mmal_util PROPERTIES SOVERSION 0)
++
++install(TARGETS mmal_util DESTINATION ${CMAKE_INSTALL_LIBDIR})
+ install(FILES
+    mmal_component_wrapper.h
+    mmal_connection.h
+--- a/interface/mmal/vc/CMakeLists.txt
++++ b/interface/mmal/vc/CMakeLists.txt
+@@ -13,7 +13,9 @@ endif(BUILD_MMAL_APPS)
+ 
+ include_directories ( ../../../host_applications/linux/libs/sm )
+ 
+-install(TARGETS mmal_vc_client DESTINATION lib)
++set_target_properties(mmal_vc_client PROPERTIES SOVERSION 0)
++
++install(TARGETS mmal_vc_client DESTINATION ${CMAKE_INSTALL_LIBDIR})
+ install(FILES
+    mmal_vc_api.h
+    mmal_vc_api_drm.h
+--- a/interface/vchiq_arm/CMakeLists.txt
++++ b/interface/vchiq_arm/CMakeLists.txt
+@@ -5,7 +5,9 @@ add_library(vchiq_arm SHARED
+ # pull in VCHI cond variable emulation
+ target_link_libraries(vchiq_arm vcos)
+ 
+-install(TARGETS vchiq_arm DESTINATION lib)
++set_target_properties(vchiq_arm PROPERTIES SOVERSION 0)
++
++install(TARGETS vchiq_arm DESTINATION ${CMAKE_INSTALL_LIBDIR})
+ #install(FILES etc/10-vchiq.rules DESTINATION /etc/udev/rules.d)
+ 
+ include_directories(../..)
+--- a/interface/vmcs_host/CMakeLists.txt
++++ b/interface/vmcs_host/CMakeLists.txt
+@@ -32,5 +32,7 @@ target_link_libraries(vchostif vchiq_arm
+ 
+ #target_link_libraries(bufman WFC)
+ 
+-install(TARGETS ${INSTALL_TARGETS} DESTINATION lib)
++set_target_properties(${INSTALL_TARGETS} PROPERTIES SOVERSION 0)
++
++install(TARGETS ${INSTALL_TARGETS} DESTINATION ${CMAKE_INSTALL_LIBDIR})
+ 
+--- a/middleware/openmaxil/CMakeLists.txt
++++ b/middleware/openmaxil/CMakeLists.txt
+@@ -49,4 +49,6 @@ else ()
+ 
+ endif ()
+ 
+-install (TARGETS openmaxil DESTINATION lib)
++set_target_properties(openmaxil PROPERTIES SOVERSION 0)
++
++install (TARGETS openmaxil DESTINATION ${CMAKE_INSTALL_LIBDIR})
+--- a/containers/CMakeLists.txt
++++ b/containers/CMakeLists.txt
+@@ -66,7 +66,10 @@ set(packetizers_SRCS ${packetizers_SRCS}
+ 
+ add_library(containers ${LIBRARY_TYPE} ${core_SRCS} ${io_SRCS} ${net_SRCS} ${packetizers_SRCS})
+ target_link_libraries(containers vcos)
+-install(TARGETS containers DESTINATION lib)
++
++set_target_properties(containers PROPERTIES SOVERSION 0)
++
++install(TARGETS containers DESTINATION ${CMAKE_INSTALL_LIBDIR})
+ 
+ set(container_readers)
+ set(container_writers)
+--- a/helpers/dtoverlay/CMakeLists.txt
++++ b/helpers/dtoverlay/CMakeLists.txt
+@@ -22,4 +22,6 @@ add_library (dtovl ${SHARED}
+ 
+ target_link_libraries(dtovl fdt)
+ 
+-install (TARGETS dtovl DESTINATION lib)
++set_target_properties(dtovl PROPERTIES SOVERSION 0)
++
++install (TARGETS dtovl DESTINATION ${CMAKE_INSTALL_LIBDIR})
+--- a/pkgconfig/bcm_host.pc.in
++++ b/pkgconfig/bcm_host.pc.in
+@@ -1,6 +1,6 @@
+ prefix=@CMAKE_INSTALL_PREFIX@
+ exec_prefix=${prefix}
+-libdir=${exec_prefix}/lib
++libdir=${exec_prefix}/@CMAKE_INSTALL_LIBDIR@
+ includedir=${prefix}/include
+ 
+ Name: bcm_host
+--- a/pkgconfig/brcmegl.pc.in
++++ b/pkgconfig/brcmegl.pc.in
+@@ -1,6 +1,6 @@
+ prefix=@CMAKE_INSTALL_PREFIX@
+ exec_prefix=${prefix}
+-libdir=${exec_prefix}/lib
++libdir=${exec_prefix}/@CMAKE_INSTALL_LIBDIR@
+ includedir=${prefix}/include
+ 
+ Name: brcmEGL
+--- a/pkgconfig/brcmglesv2.pc.in
++++ b/pkgconfig/brcmglesv2.pc.in
+@@ -1,6 +1,6 @@
+ prefix=@CMAKE_INSTALL_PREFIX@
+ exec_prefix=${prefix}
+-libdir=${exec_prefix}/lib
++libdir=${exec_prefix}/@CMAKE_INSTALL_LIBDIR@
+ includedir=${prefix}/include
+ 
+ Name: brcmGLESv2
+--- a/pkgconfig/brcmvg.pc.in
++++ b/pkgconfig/brcmvg.pc.in
+@@ -1,6 +1,6 @@
+ prefix=@CMAKE_INSTALL_PREFIX@
+ exec_prefix=${prefix}
+-libdir=${exec_prefix}/lib
++libdir=${exec_prefix}/@CMAKE_INSTALL_LIBDIR@
+ includedir=${prefix}/include
+ 
+ Name: brcmOpenVG
+--- a/pkgconfig/mmal.pc.in
++++ b/pkgconfig/mmal.pc.in
+@@ -1,6 +1,6 @@
+ prefix=@CMAKE_INSTALL_PREFIX@
+ exec_prefix=${prefix}
+-libdir=${exec_prefix}/lib
++libdir=${exec_prefix}/@CMAKE_INSTALL_LIBDIR@
+ includedir=${prefix}/include
+ 
+ Name: MMAL
+--- a/pkgconfig/vcsm.pc.in
++++ b/pkgconfig/vcsm.pc.in
+@@ -1,6 +1,6 @@
+ prefix=@CMAKE_INSTALL_PREFIX@
+ exec_prefix=${prefix}
+-libdir=${exec_prefix}/lib
++libdir=${exec_prefix}/@CMAKE_INSTALL_LIBDIR@
+ includedir=${prefix}/include
+ 
+ Name: VCSM

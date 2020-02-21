@@ -1,0 +1,43 @@
+Source: raspberrypi-userland
+Section: devel
+Priority: optional
+Maintainer: Serge Schneider <serge@raspberrypi.org>
+Build-Depends: debhelper (>= 11), cmake, pkg-config
+Standards-Version: 4.1.3
+Homepage: https://github.com/raspberrypi/userland
+Vcs-Git: https://github.com/RPi-Distro/userland.git
+Vcs-Browser: https://github.com/RPi-Distro/userland
+
+Package: libraspberrypi0
+Section: libs
+Architecture: armhf arm64
+Depends: raspberrypi-bootloader, ${shlibs:Depends}, ${misc:Depends}
+Description: Libraries for the Raspberry Pi's VideoCore IV
+ This package contains MMAL and other libraries for the Raspberry Pi's
+ VideoCore IV multimedia processor.
+
+Package: libraspberrypi-dev
+Section: libdevel
+Architecture: armhf arm64
+Depends: libraspberrypi0 (= ${binary:Version}), ${misc:Depends}
+Description: Libraries for the Raspberry Pi's VideoCore IV (headers)
+ This package contains headers and other development files for MMAL and other
+ libraries for the Raspberry Pi's VideoCore IV multimedia processor.
+
+Package: libraspberrypi-doc
+Section: libdevel
+Architecture: all
+Depends: libraspberrypi-dev (>= ${source:Version}), ${misc:Depends}
+Description: Libraries for the Raspberry Pi's VideoCore IV (docs)
+ This package contains headers and other development files for MMAL and other
+ libraries for the Raspberry Pi's VideoCore IV multimedia processor.
+
+Package: libraspberrypi-bin
+Section: misc
+Architecture: armhf arm64 
+Depends: libraspberrypi0 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends},
+ device-tree-compiler
+Recommends: vcdbg [armhf]
+Description: Miscellaneous Raspberry Pi utilities
+ This package contains various utilities for interacting with the Raspberry
+ Pi's VideoCore IV.
