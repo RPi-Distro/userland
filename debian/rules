@@ -19,6 +19,9 @@ override_dh_auto_clean:
 override_dh_auto_configure:
 	dh_auto_configure -- -DARM64=$(ARM64)
 
+override_dh_installudev:
+	dh_installudev --name=local-rpi --priority=10
+
 override_dh_fixperms:
 	dh_fixperms
 	chown -R :users debian/tmp/usr/src/hello_pi

@@ -1,3 +1,12 @@
+raspberrypi-userland (2+git20210928~141951+6e8f786-1~buster) buster; urgency=medium
+
+  * Update to 6e8f786
+  * Install udev rule through dh_installudev
+  * Update vcio and vchiq udev rules
+  * Install manpages
+
+ -- Serge Schneider <serge@raspberrypi.com>  Tue, 19 Oct 2021 14:59:56 +0100
+
 raspberrypi-userland (2+git20210719~113532+97bc818-1) buster; urgency=medium
 
   * Update from master
