@@ -1,0 +1,44 @@
+Source: raspberrypi-userland
+Section: unknown
+Priority: optional
+Maintainer: Serge Schneider <serge@raspberrypi.org>
+Build-Depends: debhelper (>= 11), cmake, pkg-config
+Standards-Version: 4.1.3
+Homepage: https://github.com/raspberrypi/userland
+Vcs-Git: https://github.com/RPi-Distro/userland.git
+Vcs-Browser: https://github.com/RPi-Distro/userland
+
+Package: libraspberrypi0
+Section: libs
+Architecture: armhf arm64
+Depends: raspberrypi-bootloader, ${shlibs:Depends}, ${misc:Depends}
+Description: EGL/GLES/OpenVG/etc. libraries for the Raspberry Pi's VideoCore IV
+ This package contains implementations of EGL, OpenGL ES, OpenVG, OpenWF
+ Composition, and others for the Raspberry Pi's VideoCore IV multimedia
+ processor.
+
+Package: libraspberrypi-dev
+Section: libdevel
+Architecture: armhf arm64
+Depends: libraspberrypi0 (= ${binary:Version}), ${misc:Depends}
+Description: EGL/GLES/OpenVG/etc. libraries for the Raspberry Pi's VideoCore IV (headers)
+ This package contains headers and other development files for implementations
+ of EGL, OpenGL ES, OpenVG, OpenWF Composition, and others for the Raspberry
+ Pi's VideoCore IV multimedia processor.
+
+Package: libraspberrypi-doc
+Section: libdevel
+Architecture: all
+Depends: libraspberrypi-dev (>= ${source:Version}), ${misc:Depends}
+Description: EGL/GLES/OpenVG/etc. libraries for the Raspberry Pi's VideoCore IV (headers)
+ This package contains headers, example code, and other development files for
+ implementations of EGL, OpenGL ES, OpenVG, OpenWF Composition, and others for
+ the Raspberry Pi's VideoCore IV multimedia processor.
+
+Package: libraspberrypi-bin
+Section: misc
+Architecture: armhf arm64 
+Depends: libraspberrypi0 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}, device-tree-compiler
+Description: Miscellaneous Raspberry Pi utilities
+ This package contains various utilities for interacting with the Raspberry
+ Pi's VideoCore IV.

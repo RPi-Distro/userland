@@ -1,0 +1,2 @@
+usr/lib/*/lib*.so.*
+lib/udev/rules.d/10-local-rpi.rules

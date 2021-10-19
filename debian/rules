@@ -1,0 +1,42 @@
+#!/usr/bin/make -f
+include /usr/share/dpkg/architecture.mk
+
+ifeq ($(DEB_HOST_ARCH),armhf)
+	ARM64 = OFF
+else ifeq ($(DEB_HOST_ARCH),arm64)
+	ARM64 = ON
+else
+	$(error Unsupported architecture $(DEB_HOST_ARCH))
+endif
+
+%:
+	dh $@
+
+override_dh_auto_clean:
+	rm -rf build/
+	dh_auto_clean
+
+override_dh_auto_configure:
+	dh_auto_configure -- -DARM64=$(ARM64)
+
+override_dh_fixperms:
+	dh_fixperms
+	chown -R :users debian/tmp/usr/src/hello_pi
+	chmod -R g+w debian/tmp/usr/src/hello_pi
+
+override_dh_install:
+	dh_install
+ifneq (arm64,$(DEB_BUILD_ARCH))
+	rm debian/libraspberrypi0/usr/lib/*/libEGL.so.*
+	rm debian/libraspberrypi0/usr/lib/*/libGLESv2.so.*
+	rm debian/libraspberrypi0/usr/lib/*/libOpenVG.so.*
+	rm debian/libraspberrypi0/usr/lib/*/libWFC.so.*
+	rm debian/libraspberrypi-dev/usr/lib/*/libEGL.so
+	rm debian/libraspberrypi-dev/usr/lib/*/libGLESv2.so
+	rm debian/libraspberrypi-dev/usr/lib/*/libOpenVG.so
+	rm debian/libraspberrypi-dev/usr/lib/*/libWFC.so
+	#rm debian/libraspberrypi0/usr/lib/libGLESv1_CM.so*
+else
+	rm -rf debian/libraspberrypi-dev/usr/include/KHR/
+	rm -rf debian/libraspberrypi-dev/usr/include/*GL*
+endif
